@@ -22,6 +22,7 @@ public interface Backtracker {
   static interface RestorableState {};
   
   void attach(VM vm);
+  void reattach(VM vm);
   
   // the backtracking interface (depth first search only)
   boolean backtrack ();

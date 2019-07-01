@@ -32,7 +32,7 @@ import java.util.HashMap;
  * (which are little more than just a list of ChoiceGenerator classnames and
  * choiceIndex indexes stored in a previous run)
  */
-public class ChoicePoint {
+public class ChoicePoint implements Cloneable{
   String cgClassName;
   int choiceIndex;
   ChoicePoint next, prev;
@@ -254,4 +254,14 @@ public class ChoicePoint {
 
     return firstCp;
   }
+
+  @Override
+  public ChoicePoint clone() throws CloneNotSupportedException{
+    ChoicePoint clonedChoicePoint = (ChoicePoint) super.clone();
+    clonedChoicePoint.cgClassName = new String(cgClassName);
+    clonedChoicePoint.next = (ChoicePoint) next.clone();
+    clonedChoicePoint.prev = (ChoicePoint) prev.clone();
+    return clonedChoicePoint;
+
+  } 
 }

@@ -35,6 +35,14 @@ public class DefaultBacktracker<KState> implements Backtracker {
     restorer = vm.getRestorer();
   }
 
+  @Override
+  public void reattach(VM vm) {
+    ss = vm.getSystemState();
+    restorer = vm.getRestorer();
+    //resets the head of the stack to the new SystemState
+    sstack = sstack.tail;
+    pushSystemState();
+  }
   //--- the backtrack support (depth first only)
   
   protected void backtrackKernelState() {

@@ -967,8 +967,17 @@ public class SystemState implements Cloneable {
 
 
   @Override
-  public Object clone() throws CloneNotSupportedException{
-    return super.clone();
+  public SystemState clone() throws CloneNotSupportedException{
+    SystemState ssClone = (SystemState) super.clone();
+    ssClone.curCg = curCg.deepClone();// the ChoiceGenerator for the current transition
+    ssClone.nextCg = nextCg.deepClone();
+    //ssClone.execThread = (ThreadInfo) execThread.clone(); //Will have to look into the deepClone of this class
+    //ssClone.restorers = new LinkedHashMap<Object,ClosedMemento>(restorers);
+    //ssClone.ks = ks.clone();
+    //ssClone.trail = (Transition) trail.clone();
+    //ssClone.uncaughtException = (UncaughtException) uncaughtException.clone();
+    //ssClone.extendTransitions = (TypeSpecMatcher) extendTransitions.clone();
+    return ssClone;
   }
 
 }

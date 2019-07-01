@@ -175,4 +175,15 @@ public class KernelState implements Restorable<KernelState> {
       sa.cleanUpDanglingReferences(heap);
     }
   }
+
+//  //Implements deep copy
+//  @Override
+//  public KernelState clone() {
+//    KernelState clonedKs = super.clone();
+//    clonedKs.heap = heap.clone();
+//    clonedKs.threads = threads.clone();
+//    clonedKs.classLoaders = classLoaders.clone();
+//    clonedKs.listeners = new Stack<ChangeListener>(listeners);
+//    return clonedKs;
+// }
 }

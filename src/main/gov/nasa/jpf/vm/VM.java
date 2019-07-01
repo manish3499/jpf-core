@@ -1919,6 +1919,7 @@ public abstract class VM {
         clone.reset();
 
         ss = ssClone;
+        backtracker.reattach(vm);
         //backtrack();
 
 
