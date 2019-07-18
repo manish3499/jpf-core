@@ -36,23 +36,23 @@ import gov.nasa.jpf.util.event.NoEvent;
  */
 public class JPF_gov_nasa_jpf_ChoiceCounter extends NativePeer {
 
-  private int choiceCount = 0;
+  private static int choiceCount = 0;
 
-  public int getChoiceCount() {
+  public static int getChoiceCount() {
     return choiceCount;
   }
 
-  public void incrementChoiceCount() {
+  public static void incrementChoiceCount() {
     choiceCount++;
   }
 
   @MJI
-  public void countChoice____ (MJIEnv env, int objRef) {
+  public static void countChoice (MJIEnv env, int objRef) {
     incrementChoiceCount();
   }
 
   @MJI
-  public int getChoiceCount____I (MJIEnv env, int objRef) {
+  public static int getChoiceCount (MJIEnv env, int objRef) {
     return getChoiceCount();
   }
 
