@@ -29,15 +29,13 @@ public class ChoiceCounterTest extends TestJPF {
 
   @Test
   public void testChoiceCounter() {
-
     if (verifyNoPropertyViolation()) {
-//      ChoiceCounter.countChoice();
-//      ChoiceCounter.countChoice();
+      ChoiceCounter cc = new ChoiceCounter();
+      cc.countChoice();
+      cc.countChoice();
       
+      System.out.println(cc.getChoiceCount());
     }
-
-    //System.out.println(ChoiceCounter.getChoiceCount());
-
 
   }
 }

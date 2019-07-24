@@ -26,12 +26,12 @@ public class ChoiceCounter {
   /**
    * Used to count the number of choices made
    */
-  public static native void countChoice();
+  public native void countChoice();
 
   /**
    * Get the total count of choices made
    */
-  public static native int getChoiceCount();
+  public native int getChoiceCount();
   
 
 }
