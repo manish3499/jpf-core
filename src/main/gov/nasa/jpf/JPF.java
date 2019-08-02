@@ -189,8 +189,17 @@ public class JPF implements Runnable {
 
           @Override
           public void run() {
-            JPF jpf = new JPF(conf);
-            jpf.run();
+            JPF jpf1 = new JPF(conf);
+            jpf1.run();
+          }
+        }.start();
+
+        new Thread() {
+
+          @Override
+          public void run() {
+            JPF jpf2 = new JPF(conf);
+            jpf2.run();
           }
         }.start();
 
