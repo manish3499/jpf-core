@@ -185,8 +185,14 @@ public class JPF implements Runnable {
       checkUnknownArgs(args);
 
       try {
-        JPF jpf = new JPF(conf);
-        jpf.run();
+        new Thread() {
+
+          @Override
+          public void run() {
+            JPF jpf = new JPF(conf);
+            jpf.run();
+          }
+        }.start();
 
       } catch (ExitException x) {
         logger.severe( "JPF terminated");
