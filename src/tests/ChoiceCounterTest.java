@@ -35,18 +35,17 @@ public class ChoiceCounterTest extends TestJPF {
   public void testChoiceCounter() {
     if (verifyNoPropertyViolation()) {
 
-      ChoiceCounter cc = new ChoiceCounter();
-      cc.addActualChoicePair(1,1);
-      cc.addActualChoicePair(1,2);
-      cc.addActualChoicePair(2,1);
-      cc.addActualChoicePair(2,2);
+      ChoiceCounter.addActualChoicePair(1,1);
+      ChoiceCounter.addActualChoicePair(1,2);
+      ChoiceCounter.addActualChoicePair(2,1);
+      ChoiceCounter.addActualChoicePair(2,2);
 
       int m = Verify.getInt(1,2);
       int n = Verify.getInt(1,2);
-      cc.recordChoicePair(m ,n);
+      ChoiceCounter.recordChoicePair(m ,n);
 
       if( m == 2 && n == 2) {
-        assert cc.checkRecordedChoices();
+        assert ChoiceCounter.checkRecordedChoices();
       }
 
     }

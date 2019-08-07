@@ -41,8 +41,8 @@ public class JPF_gov_nasa_jpf_ChoiceCounter extends NativePeer {
 
   private int choiceCount = 0;
 
-  Set<Integer> recordedChoiceSet = new HashSet<Integer>();
-  Set<Integer> actualChoiceSet = new HashSet<Integer>();
+  static Set<Integer> recordedChoiceSet = new HashSet<Integer>();
+  static Set<Integer> actualChoiceSet = new HashSet<Integer>();
 
   public int getChoiceCount() {
     return choiceCount;
@@ -63,17 +63,17 @@ public class JPF_gov_nasa_jpf_ChoiceCounter extends NativePeer {
   }
 
   @MJI
-  public void recordChoicePair__II__V (MJIEnv env, int objRef, int m, int n) {
+  public static void recordChoicePair__II__V (MJIEnv env, int objRef, int m, int n) {
     recordedChoiceSet.add(m * 100 + n);
   }
 
   @MJI
-  public void addActualChoicePair__II__V (MJIEnv env, int objRef, int m, int n) {
+  public static void addActualChoicePair__II__V (MJIEnv env, int objRef, int m, int n) {
     actualChoiceSet.add(m * 100 + n);
   }
 
   @MJI
-  public boolean checkRecordedChoices (MJIEnv env, int objRef) {
+  public static boolean checkRecordedChoices (MJIEnv env, int objRef) {
     System.out.println("Recorded choices " + recordedChoiceSet.toString());
     System.out.println("Expected choices " + actualChoiceSet.toString());
     return actualChoiceSet.equals(recordedChoiceSet);

@@ -38,16 +38,16 @@ public class ChoiceCounter {
   /**
    * Used to record a pair of choices made
    */
-  public  native void recordChoicePair(int m, int n);
+  public static native void recordChoicePair(int m, int n);
 
   /**
    *Used to add the the actual pair choices to be compared with
    */
-  public native void addActualChoicePair(int m, int n);
+  public static native void addActualChoicePair(int m, int n);
 
   /**
    * Used to compare the actual pair of choices to the recorded choices
    */
-  public native boolean checkRecordedChoices();
+  public static native boolean checkRecordedChoices();
 
 }
