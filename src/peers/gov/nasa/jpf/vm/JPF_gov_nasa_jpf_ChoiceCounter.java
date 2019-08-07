@@ -29,6 +29,9 @@ import gov.nasa.jpf.util.event.EventChoiceGenerator;
 import gov.nasa.jpf.util.event.EventTree;
 import gov.nasa.jpf.util.event.NoEvent;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * native peer for ChoiceCounter
  * Initially it is declared in such a manner that it simply counts the choices. If the native peer works perfectly,
@@ -37,6 +40,9 @@ import gov.nasa.jpf.util.event.NoEvent;
 public class JPF_gov_nasa_jpf_ChoiceCounter extends NativePeer {
 
   private int choiceCount = 0;
+
+  Set<Integer> recordedChoiceSet = new HashSet<Integer>();
+  Set<Integer> actualChoiceSet = new HashSet<Integer>();
 
   public int getChoiceCount() {
     return choiceCount;
@@ -54,6 +60,21 @@ public class JPF_gov_nasa_jpf_ChoiceCounter extends NativePeer {
   @MJI
   public int getChoiceCount (MJIEnv env, int objRef) {
     return getChoiceCount();
+  }
+
+  @MJI
+  public void recordChoicePair (MJIEnv env, int objRef, int m, int n) {
+    recordedChoiceSet.add(m * 100 + n);
+  }
+
+  @MJI
+  public void addActualChoicePair (MJIEnv env, int objRef, int m, int n) {
+    actualChoiceSet.add(m * 100 + n);
+  }
+
+  @MJI
+  public boolean checkRecordedChoices (MJIEnv env, int objRef) {
+    return actualChoiceSet.equals(recordedChoiceSet);
   }
 
 

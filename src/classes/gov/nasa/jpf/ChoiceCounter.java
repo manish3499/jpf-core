@@ -18,6 +18,8 @@
 
 package gov.nasa.jpf;
 
+import java.util.Set;
+
 /**
  * a model class that counts the choices made
  */
@@ -32,6 +34,20 @@ public class ChoiceCounter {
    * Get the total count of choices made
    */
   public native int getChoiceCount();
-  
+
+  /**
+   * Used to record a pair of choices made
+   */
+  public  native void recordChoicePair(int m, int n);
+
+  /**
+   *Used to add the the actual pair choices to be compared with
+   */
+  public native void addActualChoicePair(int m, int n);
+
+  /**
+   * Used to compare the actual pair of choices to the recorded choices
+   */
+  public native boolean checkRecordedChoices();
 
 }
