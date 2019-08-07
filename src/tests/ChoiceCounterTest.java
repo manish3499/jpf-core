@@ -34,30 +34,19 @@ public class ChoiceCounterTest extends TestJPF {
   @Test
   public void testChoiceCounter() {
     if (verifyNoPropertyViolation()) {
-//      ChoiceCounter cc = new ChoiceCounter();
-//      cc.countChoice();
-//      cc.countChoice();
-//      System.out.println(cc.getChoiceCount());
 
-      //This set contains the actual choices which are supposed to be made
-      Set<Integer> actualChoiceSet = new HashSet<Integer>();
-      actualChoiceSet.add(101);
-      actualChoiceSet.add(102);
-      actualChoiceSet.add(201);
-      actualChoiceSet.add(202);
-
-      //This set contains the recorded choices so that they can be compared with the actual choices that are
-      //supposed to be made
-      Set<Integer> recordedChoiceSet = new HashSet<Integer>();
+      ChoiceCounter cc = new ChoiceCounter();
+      cc.addActualChoicePair(1,1);
+      cc.addActualChoicePair(1,2);
+      cc.addActualChoicePair(2,1);
+      cc.addActualChoicePair(2,2);
 
       int m = Verify.getInt(1,2);
       int n = Verify.getInt(1,2);
-      recordedChoiceSet.add(m * 100 + n); //ERROR: this is supposed to record every choice but records only the last one
+      cc.recordChoicePair(m ,n);
 
-      if (m == 2 && n == 2) {
-        System.out.println(actualChoiceSet);
-        System.out.println(recordedChoiceSet);
-        assert actualChoiceSet.equals(recordedChoiceSet);
+      if( m == 2 && n == 2) {
+        assert cc.checkRecordedChoices();
       }
 
     }
