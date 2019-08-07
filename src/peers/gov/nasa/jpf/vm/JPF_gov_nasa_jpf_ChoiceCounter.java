@@ -63,17 +63,19 @@ public class JPF_gov_nasa_jpf_ChoiceCounter extends NativePeer {
   }
 
   @MJI
-  public void recordChoicePair (MJIEnv env, int objRef, int m, int n) {
+  public void recordChoicePair__II__V (MJIEnv env, int objRef, int m, int n) {
     recordedChoiceSet.add(m * 100 + n);
   }
 
   @MJI
-  public void addActualChoicePair (MJIEnv env, int objRef, int m, int n) {
+  public void addActualChoicePair__II__V (MJIEnv env, int objRef, int m, int n) {
     actualChoiceSet.add(m * 100 + n);
   }
 
   @MJI
   public boolean checkRecordedChoices (MJIEnv env, int objRef) {
+    System.out.println("Recorded choices " + recordedChoiceSet.toString());
+    System.out.println("Expected choices " + actualChoiceSet.toString());
     return actualChoiceSet.equals(recordedChoiceSet);
   }
 
