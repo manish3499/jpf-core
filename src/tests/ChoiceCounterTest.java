@@ -23,17 +23,43 @@
 import gov.nasa.jpf.util.test.TestJPF;
 import gov.nasa.jpf.ChoiceCounter;
 
+import gov.nasa.jpf.vm.Verify;
 import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class ChoiceCounterTest extends TestJPF {
 
   @Test
   public void testChoiceCounter() {
     if (verifyNoPropertyViolation()) {
-      ChoiceCounter cc = new ChoiceCounter();
-      cc.countChoice();
-      cc.countChoice();
-      System.out.println(cc.getChoiceCount());
+//      ChoiceCounter cc = new ChoiceCounter();
+//      cc.countChoice();
+//      cc.countChoice();
+//      System.out.println(cc.getChoiceCount());
+
+      //This set contains the actual choices which are supposed to be made
+      Set<Integer> actualChoiceSet = new HashSet<Integer>();
+      actualChoiceSet.add(101);
+      actualChoiceSet.add(102);
+      actualChoiceSet.add(201);
+      actualChoiceSet.add(202);
+
+      //This set contains the recorded choices so that they can be compared with the actual choices that are
+      //supposed to be made
+      Set<Integer> recordedChoiceSet = new HashSet<Integer>();
+
+      int m = Verify.getInt(1,2);
+      int n = Verify.getInt(1,2);
+      recordedChoiceSet.add(m * 100 + n); //ERROR: this is supposed to record every choice but records only the last one
+
+      if (m == 2 && n == 2) {
+        System.out.println(actualChoiceSet);
+        System.out.println(recordedChoiceSet);
+        assert actualChoiceSet.equals(recordedChoiceSet);
+      }
+
     }
 
   }
