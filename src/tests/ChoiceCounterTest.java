@@ -33,7 +33,7 @@ public class ChoiceCounterTest extends TestJPF {
 
   @Test
   public void testChoiceCounter() {
-    if (verifyNoPropertyViolation()) {
+    if (verifyNoPropertyViolation("+listener=.listener.ChoiceListener")) {
 
       ChoiceCounter.addActualChoicePair(1,1);
       ChoiceCounter.addActualChoicePair(1,2);
@@ -43,10 +43,6 @@ public class ChoiceCounterTest extends TestJPF {
       int m = Verify.getInt(1,2);
       int n = Verify.getInt(1,2);
       ChoiceCounter.recordChoicePair(m ,n);
-
-      if( m == 2 && n == 2) {
-        assert ChoiceCounter.checkRecordedChoices();
-      }
 
     }
 
