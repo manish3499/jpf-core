@@ -28,6 +28,7 @@ import gov.nasa.jpf.vm.Instruction;
 import gov.nasa.jpf.vm.VM;
 import gov.nasa.jpf.vm.MethodInfo;
 import gov.nasa.jpf.vm.ThreadInfo;
+import gov.nasa.jpf.util.ChoiceCounter;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -59,13 +60,6 @@ public class ChoiceListener extends ListenerAdapter {
   boolean showShared = false;
   
   PrintWriter out;
-  String lastLine;
-  MethodInfo lastMi;
-  String linePrefix;
-  int choiceCount = -1;
-  Set<ChoiceGenerator> choiceGeneratorSet = new HashSet<ChoiceGenerator>();
-//  Set<Integer, Integer> choiceSet = new HashSet<Integer, Integer>();
-
 
   boolean skip;
   MethodInfo miMain; // just to make init skipping more efficient
@@ -93,45 +87,12 @@ public class ChoiceListener extends ListenerAdapter {
   }
   
   /******************************************* SearchListener interface *****/
-  
 
-
-  @Override
-  public void stateAdvanced(Search search) {
-    choiceGeneratorSet.add(search.getVM().getChoiceGenerator());
-    out.println("ChoiceGeneratorSet size =" +choiceGeneratorSet.size());
-    choiceCount++;
-
-    if (choiceGeneratorSet.size() == 2) {
-      out.println("It works ****");
-      ChoiceGenerator[] choiceGeneratorArray = choiceGeneratorSet.toArray(new ChoiceGenerator[choiceGeneratorSet.size()]);
-//      choiceSet.add((Integer) choiceGeneratorArray[0].getNextChoice(), (Integer) choiceGeneratorArray[1].getNextChoice());
-    }
-  }
-
-
-  
   @Override
   public void searchFinished(Search search) {
     out.println("----------------------------------- search finished");
-    out.println(choiceCount);
+    assert ChoiceCounter.checkRecordedChoices(); //Checks if all the choices are made as expected
   }
 
-  /******************************************* VMListener interface *********/
-
-
-  
-  /****************************************** private stuff ******/
-
-  void filterArgs (String[] args) {
-    for (int i=0; i<args.length; i++) {
-      if (args[i] != null) {
-        if (args[i].equals("-print-lines")) {
-          printSrc = true;
-          args[i] = null;
-        }
-      }
-    }
-  }
 }
 
