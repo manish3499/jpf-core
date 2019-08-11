@@ -46,7 +46,7 @@ public class ClassLoaderInfoTest extends TestJPF {
     VM vm = jpf.getVM();
     Heap heap = vm.getHeap();
 
-    vm.initialize(); // this should instantiate two SystemClassLoaders
+    vm.initialize(0); // this should instantiate two SystemClassLoaders
 
     ThreadInfo[] threads = vm.getLiveThreads();
     assertTrue( threads.length == 2);

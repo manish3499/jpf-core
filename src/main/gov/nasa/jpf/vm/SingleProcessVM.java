@@ -122,7 +122,7 @@ public class SingleProcessVM extends VM {
   
   
   @Override
-  public boolean initialize(){
+  public boolean initialize(int handleSplit){
     try {
       // this has to happen before we load the startup classes during initializeMainThread
       scheduler.initialize(this, appCtx);
@@ -133,6 +133,8 @@ public class SingleProcessVM extends VM {
       if (tiMain == null) {
         return false; // bail out
       }
+
+      this.handleSplit = handleSplit;
 
       initSystemState(tiMain);
       initialized = true;

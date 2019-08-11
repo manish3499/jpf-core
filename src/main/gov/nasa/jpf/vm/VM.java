@@ -74,6 +74,8 @@ public abstract class VM {
    */
   protected static VM vm;
 
+  protected int handleSplit;
+
   static {
     initStaticFields();
   }
@@ -554,7 +556,7 @@ public abstract class VM {
    * this is the main initialization point that sets up startup objects threads and callstacks.
    * If this returns false VM initialization cannot proceed and JPF will terminate
    */
-  public abstract boolean initialize ();
+  public abstract boolean initialize (int handleSplit);
   
   /**
    * create and initialize the main thread for the given ApplicationContext.
@@ -1796,11 +1798,18 @@ public abstract class VM {
         System.out.println("min = " + min);
         System.out.println("max = " + max);
         System.out.println("split at " + max/2);
-        parent.setMin(max / 2);
-        parent.reset();
-        IntIntervalGenerator clone = (IntIntervalGenerator) parent.deepClone();
-        clone.setMin(max / 2 + 1);
-        clone.setMax(max);
+
+        if (handleSplit == 1 ) {
+            parent.setMax(max/2);
+        } else  if (handleSplit == 2) {
+            parent.setMin(max / 2 + 1);
+            parent.reset();
+        }
+//        parent.setMin(max / 2);
+//        parent.reset();
+//        IntIntervalGenerator clone = (IntIntervalGenerator) parent.deepClone();
+//        clone.setMin(max / 2 + 1);
+//        clone.setMax(max);
         //clone.setPreviousChoiceGenerator(parent);
         //clone.setCascaded();
         //clone = new IntIntervalGenerator( "clone", max / 2 + 1, max);
@@ -1813,10 +1822,10 @@ public abstract class VM {
       catch (ClassCastException exception){
         //Do nothing
       }
-      catch (CloneNotSupportedException exception) {
-        // IntIntervalGenerator clone = new IntIntervalGenerator( "clone", max / 2 + 1, max);
-        // System.out.println("new created");
-      }
+//      catch (CloneNotSupportedException exception) {
+//        // IntIntervalGenerator clone = new IntIntervalGenerator( "clone", max / 2 + 1, max);
+//        // System.out.println("new created");
+//      }
 
 
     }

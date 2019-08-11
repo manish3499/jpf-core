@@ -174,7 +174,7 @@ public class MultiProcessVM extends VM {
   }
 
   @Override
-  public boolean initialize(){
+  public boolean initialize(int handleSplit){
     try {
       ThreadInfo tiFirst = null;
       

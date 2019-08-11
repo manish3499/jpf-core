@@ -30,6 +30,7 @@ import gov.nasa.jpf.util.RunRegistry;
 import gov.nasa.jpf.vm.VM;
 import gov.nasa.jpf.vm.NoOutOfMemoryErrorProperty;
 import gov.nasa.jpf.vm.VMListener;
+import gov.nasa.jpf.search.ConcurrentDFSearch;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -48,6 +49,14 @@ public class JPF implements Runnable {
   static Logger logger     = null; // initially
 
   public enum Status { NEW, RUNNING, DONE };
+
+  final int NO_SPLIT = 0;
+  final int FIRST_HALF_SPLIT = 1;
+  final int SECOND_HALF_SPLIT = 2;
+
+  static private boolean choiceSplit = false;
+
+  private int handleSplit = NO_SPLIT;
 
   class ConfigListener implements ConfigChangeListener {
     
@@ -184,9 +193,23 @@ public class JPF implements Runnable {
       // this is NOT about checking properties!
       checkUnknownArgs(args);
 
+      new JPF(conf);
+
       try {
-        JPF jpf = new JPF(conf);
-        jpf.run();
+
+        if (choiceSplit) {
+          JPF jpf1 = new JPF(conf);
+          jpf1.handleSplit = 1; //First half
+          jpf1.run();
+
+          JPF jpf2 = new JPF(conf);
+          jpf2.handleSplit = 2; //Second hald
+          jpf2.run();
+        } else {
+          JPF jpf = new JPF(conf);
+          jpf.handleSplit = 0; //No split
+          jpf.run();
+        }
 
       } catch (ExitException x) {
         logger.severe( "JPF terminated");
@@ -272,6 +295,8 @@ public class JPF implements Runnable {
       Object[] searchArgs = { config, vm };
       search = config.getEssentialInstance("search.class", Search.class,
                                                 searchArgTypes, searchArgs);
+
+      if (search.getClass().equals(ConcurrentDFSearch.class)) choiceSplit = true;
 
       // although the Reporter will always be notified last, this has to be set
       // first so that it can register utility listeners like Statistics that
@@ -608,7 +633,7 @@ public class JPF implements Runnable {
 
     if (isRunnable()) {
       try {
-        if (vm.initialize()) {
+        if (vm.initialize(handleSplit)) {
           status = Status.RUNNING;
           search.search();
         }
