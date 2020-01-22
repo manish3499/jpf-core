@@ -202,14 +202,23 @@ public class JPF implements Runnable {
                 JPF jpf1 = new JPF(conf);
 //                jpf1.run();
 
-                List<String> command = new ArrayList<String>();
-                command.add("bin/jpf");
-                command.add("src/examples/VerifyChoiceTest.jpf");
+                System.out.println(conf.getString("Execute"));
+
+
+                if (conf.getString("Execute").equals("left") ) {
+                    List<String> command = new ArrayList<String>();
+                    command.add("bin/jpf");
+                    command.add("src/examples/VerifyChoiceTest.jpf");
+                    command.add("+Execute=right");
 //                command.add("pwd");
 
-                Process childProcess = runProcess(command);
-                jpf1.run();
-                childProcess.waitFor();
+                    Process childProcess = runProcess(command);
+                    jpf1.run();
+                    childProcess.waitFor();
+                }
+                else {
+                    jpf1.run();
+                }
 
             } catch (ExitException x) {
                 logger.severe("JPF terminated");

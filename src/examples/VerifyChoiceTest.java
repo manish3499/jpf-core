@@ -3,7 +3,7 @@ import gov.nasa.jpf.vm.Verify;
 public class VerifyChoiceTest {
 	
 	static void main(String[] args) {
-		int m = Verify.getInt(1, 100000);
+		int m = Verify.getInt(1, 1000000);
 		System.out.println("m = " + m);
 		int n = Verify.getInt(1, 2);
 		System.out.println("n = " + n);
