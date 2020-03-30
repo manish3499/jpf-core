@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package gov.nasa.jpf;
@@ -43,12 +43,12 @@ import java.util.logging.Logger;
  * instantiates the Search and VM objects, and kicks off the Search
  */
 public class JPF implements Runnable {
-  
+
   public static String VERSION = "8.0"; // the major version number
 
-  static Logger logger     = null; // initially
+  static Logger logger = null; // initially
 
-  public enum Status { NEW, RUNNING, DONE };
+  public enum Status {NEW, RUNNING, DONE}
 
   final int NO_SPLIT = 0;
   final int FIRST_HALF_SPLIT = 1;
@@ -59,7 +59,7 @@ public class JPF implements Runnable {
   private int handleSplit = NO_SPLIT;
 
   class ConfigListener implements ConfigChangeListener {
-    
+
     /**
      * check for new listeners that are dynamically configured
      */
@@ -68,13 +68,13 @@ public class JPF implements Runnable {
       if ("listener".equals(key)) {
         if (oldValue == null)
           oldValue = "";
-        
+
         String[] nv = config.asStringArray(newValue);
         String[] ov = config.asStringArray(oldValue);
         String[] newListeners = Misc.getAddedElements(ov, nv);
-        Class<?>[] argTypes = { Config.class, JPF.class };          // Many listeners have 2 parameter constructors
-        Object[] args = {config, JPF.this };
-        
+        Class<?>[] argTypes = {Config.class, JPF.class};          // Many listeners have 2 parameter constructors
+        Object[] args = {config, JPF.this};
+
         if (newListeners != null) {
           for (String clsName : newListeners) {
             try {
@@ -89,126 +89,168 @@ public class JPF implements Runnable {
         }
       }
     }
-    
+
     /**
      * clean up to avoid a sublte but serious memory leak when using the
      * same config for multiple JPF objects/runs - this listener is an inner
      * class object that keeps its encapsulating JPF instance alive
      */
     @Override
-    public void jpfRunTerminated(Config config){
+    public void jpfRunTerminated(Config config) {
       config.removeChangeListener(this);
     }
   }
-  
-  /** this is the backbone of all JPF configuration */
-  Config config;
-  
-  /** The search policy used to explore the state space */
-  Search search;
 
-  /** Reference to the virtual machine used by the search */
-  VM vm;
 
-  /** the report generator */
-  Reporter reporter;
 
-  Status status = Status.NEW;
+    /**
+     * this is the backbone of all JPF configuration
+     */
+    Config config;
 
-  /** a list of listeners that get automatically added from VM, Search or Reporter initialization */
-  List<VMListener> pendingVMListeners;
-  List<SearchListener> pendingSearchListeners;
+    /**
+     * The search policy used to explore the state space
+     */
+    Search search;
 
-  
-  /** we use this as safety margin, to be released upon OutOfMemoryErrors */
-  byte[] memoryReserve;
-  
-  private static Logger initLogging(Config conf) {
-    LogManager.init(conf);
-    return getLogger("gov.nasa.jpf");
-  }
+    /**
+     * Reference to the virtual machine used by the search
+     */
+    VM vm;
 
-  /**
-   * use this one to get a Logger that is initialized via our Config mechanism. Note that
-   * our own Loggers do NOT pass
-   */
-  public static JPFLogger getLogger (String name) {
-    return LogManager.getLogger( name);
-  }
+    /**
+     * the report generator
+     */
+    Reporter reporter;
 
-  public static void main(String[] args){
-    int options = RunJPF.getOptions(args);
+    Status status = Status.NEW;
 
-    if (args.length == 0 || RunJPF.isOptionEnabled( RunJPF.HELP,options)) {
-      RunJPF.showUsage();
-      return;
-    }
-    if (RunJPF.isOptionEnabled( RunJPF.ADD_PROJECT,options)){
-      RunJPF.addProject(args);
-      return;
-    }
-    
-    if (RunJPF.isOptionEnabled( RunJPF.BUILD_INFO,options)){
-      RunJPF.showBuild(RunJPF.class.getClassLoader());
+    /**
+     * a list of listeners that get automatically added from VM, Search or Reporter initialization
+     */
+    List<VMListener> pendingVMListeners;
+    List<SearchListener> pendingSearchListeners;
+
+
+    /**
+     * we use this as safety margin, to be released upon OutOfMemoryErrors
+     */
+    byte[] memoryReserve;
+
+    private static Logger initLogging(Config conf) {
+        LogManager.init(conf);
+        return getLogger("gov.nasa.jpf");
     }
 
-    if (RunJPF.isOptionEnabled( RunJPF.LOG,options)){
-      Config.enableLogging(true);
+    /**
+     * use this one to get a Logger that is initialized via our Config mechanism. Note that
+     * our own Loggers do NOT pass
+     */
+    public static JPFLogger getLogger(String name) {
+        return LogManager.getLogger(name);
     }
 
-    Config conf = createConfig(args);
+    public static void main(String[] args) {
+        int options = RunJPF.getOptions(args);
 
-    if (RunJPF.isOptionEnabled( RunJPF.SHOW, options)) {
-      conf.printEntries();
+        if (args.length == 0 || RunJPF.isOptionEnabled(RunJPF.HELP, options)) {
+            RunJPF.showUsage();
+            return;
+        }
+        if (RunJPF.isOptionEnabled(RunJPF.ADD_PROJECT, options)) {
+            RunJPF.addProject(args);
+            return;
+        }
+
+        if (RunJPF.isOptionEnabled(RunJPF.BUILD_INFO, options)) {
+            RunJPF.showBuild(RunJPF.class.getClassLoader());
+        }
+
+        if (RunJPF.isOptionEnabled(RunJPF.LOG, options)) {
+            Config.enableLogging(true);
+        }
+
+        Config conf = createConfig(args);
+
+        if (RunJPF.isOptionEnabled(RunJPF.SHOW, options)) {
+            conf.printEntries();
+        }
+
+        start(conf, args);
     }
 
-    start(conf, args);
-  }
+    public static void start(Config conf, String[] args) {
+        // this is redundant to jpf.report.<publisher>.start=..config..
+        // but nobody can remember this (it's only used to produce complete reports)
 
-  public static void start(Config conf, String[] args){
-    // this is redundant to jpf.report.<publisher>.start=..config..
-    // but nobody can remember this (it's only used to produce complete reports)
+        if (logger == null) {
+            logger = initLogging(conf);
+        }
 
-    if (logger == null) {
-      logger = initLogging(conf);
-    }
+        if (!checkArgs(args)) {
+            return;
+        }
 
-    if (!checkArgs(args)){
-      return;
-    }
+        setNativeClassPath(conf); // in case we have to find a shell
 
-    setNativeClassPath(conf); // in case we have to find a shell
+        // check if there is a shell class specification, in which case we just delegate
+        JPFShell shell = conf.getInstance("shell", JPFShell.class);
+        if (shell != null) {
+            shell.start(args); // responsible for exception handling itself
 
-    // check if there is a shell class specification, in which case we just delegate
-    JPFShell shell = conf.getInstance("shell", JPFShell.class);
-    if (shell != null) {
-      shell.start(args); // responsible for exception handling itself
+        } else {
+            // no shell, we start JPF directly
+            LogManager.printStatus(logger);
+            conf.printStatus(logger);
 
-    } else {
-      // no shell, we start JPF directly
-      LogManager.printStatus(logger);
-      conf.printStatus(logger);
+            // this has to be done after we checked&consumed all "-.." arguments
+            // this is NOT about checking properties!
+            checkUnknownArgs(args);
 
-      // this has to be done after we checked&consumed all "-.." arguments
-      // this is NOT about checking properties!
-      checkUnknownArgs(args);
 
       new JPF(conf);
 
       try {
 
-        if (choiceSplit) {
-          JPF jpf1 = new JPF(conf);
-          jpf1.handleSplit = 1; //First half
-          jpf1.run();
+//        if (choiceSplit) {
+//          JPF jpf1 = new JPF(conf);
+//          jpf1.handleSplit = 1; //First half
+//          jpf1.run();
+//
+//          JPF jpf2 = new JPF(conf);
+//          jpf2.handleSplit = 2; //Second hald
+//          jpf2.run();
+//        } else {
+//          JPF jpf = new JPF(conf);
+//          jpf.handleSplit = 0; //No split
+//          jpf.run();
+//        }
 
-          JPF jpf2 = new JPF(conf);
-          jpf2.handleSplit = 2; //Second hald
-          jpf2.run();
-        } else {
-          JPF jpf = new JPF(conf);
-          jpf.handleSplit = 0; //No split
-          jpf.run();
+
+
+        JPF jpfCon = new JPF(conf);
+//                jpf1.run();
+
+        System.out.println(conf.getString("Execute"));
+
+
+        if (conf.getString("Execute").equals("left") ) {
+          List<String> command = new ArrayList<String>();
+          command.add("bin/jpf");
+          command.add("src/examples/VerifyChoiceTest.jpf");
+          command.add("+Execute=right");
+//                command.add("pwd");
+
+          Process childProcess = runProcess(command);
+          jpfCon.handleSplit = 1; //first half
+          jpfCon.run();
+          childProcess.waitFor();
+        }
+        else if (conf.getString("Execute").equals("right") ) {
+          jpfCon.handleSplit = 2; //second half
+          jpfCon.run();
+        }else {
+          jpfCon.run();
         }
 
       } catch (ExitException x) {
@@ -240,6 +282,9 @@ public class JPF implements Runnable {
         }
         // pass this on, caller has to handle
         throw jx;
+      } catch (Exception e) {
+        //System.out.println(e.getMessage());
+
       }
     }
   }
@@ -710,47 +755,54 @@ public class JPF implements Runnable {
   // some minimal sanity checks
   static boolean checkArgs (String[] args){
     String lastArg = args[args.length-1];
-    if (lastArg != null && lastArg.endsWith(".jpf")){
-      if (!new File(lastArg).isFile()){
+    if (lastArg != null && lastArg.endsWith(".jpf")) {
+      if (!new File(lastArg).isFile()) {
         logger.severe("application property file not found: " + lastArg);
         return false;
       }
     }
 
-    return true;
+        return true;
+    }
+
+    public static void handleException(JPFException e) {
+        logger.severe(e.getMessage());
+        exit();
+    }
+
+  private static Process runProcess(List<String> command) throws Exception {
+    ProcessBuilder builder = new ProcessBuilder(command);
+    Process pro = builder.inheritIO().start();
+    return pro;
   }
 
-  public static void handleException(JPFException e) {
-    logger.severe(e.getMessage());
-    exit();
-  }
+    /**
+     * private helper class for local termination of JPF (without killing the
+     * whole Java process via System.exit).
+     * While this is basically a bad non-local goto exception, it seems to be the
+     * least of evils given the current JPF structure, and the need to terminate
+     * w/o exiting the whole Java process. If we just do a System.exit(), we couldn't
+     * use JPF in an embedded context
+     */
+    @SuppressWarnings("serial")
+    public static class ExitException extends RuntimeException {
+        boolean report = true;
 
-  /**
-   * private helper class for local termination of JPF (without killing the
-   * whole Java process via System.exit).
-   * While this is basically a bad non-local goto exception, it seems to be the
-   * least of evils given the current JPF structure, and the need to terminate
-   * w/o exiting the whole Java process. If we just do a System.exit(), we couldn't
-   * use JPF in an embedded context
-   */
-  @SuppressWarnings("serial")
-  public static class ExitException extends RuntimeException {
-    boolean report = true;
-    
-    ExitException() {}
-    
-    ExitException (boolean report, Throwable cause){
-      super(cause);
-      
-      this.report = report;
+        ExitException() {
+        }
+
+        ExitException(boolean report, Throwable cause) {
+            super(cause);
+
+            this.report = report;
+        }
+
+        ExitException(String msg) {
+            super(msg);
+        }
+
+        public boolean shouldReport() {
+            return report;
+        }
     }
-    
-    ExitException(String msg) {
-      super(msg);
-    }
-    
-    public boolean shouldReport() {
-      return report;
-    }
-  }
 }
